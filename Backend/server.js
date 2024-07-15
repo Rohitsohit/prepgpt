@@ -28,7 +28,7 @@ app.use(express.json());
 app.post('/signup', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password,7);
 
     const [result] = await pool.query(
       'INSERT INTO users (username, password) VALUES (?, ?)',
@@ -42,6 +42,7 @@ app.post('/signup', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 app.post('/login', async (req, res) => {
   try {
