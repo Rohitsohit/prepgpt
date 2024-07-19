@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-let backend = "http://localhost:8000";
-
+// let backend = "http://localhost:8000";
+let backend = "https://prepgpt.vercel.app";
 export default function Quiz() {
   const [numberOfQuizzes, setNumberOfQuizzes] = useState('');
   const [fileUploaded, setFileUploaded] = useState(false);

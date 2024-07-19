@@ -3,13 +3,15 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 export default function AuthForm() {
+   let backend  = "https://prepgpt.vercel.app/";
+  //  let backend = "http://localhost:8000/"
   const [isSignup, setIsSignup] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = isSignup ? 'http://localhost:8000/auth/signup' : 'http://localhost:8000/auth/signin';
+    const url = isSignup ? `${backend}auth/signup` : `${backend}auth/signin`;
     try {
       const res = await axios.post(url, { username, password });
       console.log(res.data);

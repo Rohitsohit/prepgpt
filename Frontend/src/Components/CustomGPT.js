@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import * as pdfjsLib from 'pdfjs-dist';
 
 let backend = 'http://localhost:8000';
 
