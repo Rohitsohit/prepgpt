@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import session from 'express-session';
 import axios from 'axios';
 import NodeCache from 'node-cache';
 import { RateLimiterMemory } from 'rate-limiter-flexible';

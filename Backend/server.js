@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.use('/auth', authRouter);
 app.use('/gpt', gptRouters);
-
+app.use('/',"server is running")
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
