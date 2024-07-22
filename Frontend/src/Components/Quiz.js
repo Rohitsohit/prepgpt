@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-// let backend = "http://localhost:8000";
-let backend = "https://prepgpt.vercel.app";
+ let backend = "http://localhost:8000";
+// let backend = "https://prepgpt.vercel.app";
 export default function Quiz() {
   const [numberOfQuizzes, setNumberOfQuizzes] = useState('');
   const [fileUploaded, setFileUploaded] = useState(false);
@@ -38,13 +38,13 @@ export default function Quiz() {
   };
 
   const sendCustomData = async (customData) => {
+    console.log(customData)
     if (customData) {
-      const response = await fetch(`${backend}/api/custom-data`, {
+      const response = await fetch(`${backend}/gpt/upload-data`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: customData })
+        body: JSON.stringify({ data: customData }),
       });
-      const data = await response.json();
     } else {
       console.log('custom data is empty');
     }
@@ -54,11 +54,43 @@ export default function Quiz() {
   const handleSubmit = async () => {
     setQuizLoading(true);
     try {
-      const quizResponse = await axios.post(`${backend}/api/quiz`, {
-        numberOfQuestions: numberOfQuizzes,
-      });
-      console.log(quizResponse.data.jsonData);
-      navigate('/quiz-question', { state: { questions: quizResponse.data.jsonData } });
+      // const quizResponse = await axios.post(`${backend}/gpt/quiz`, {
+      //   numberOfQuestions: numberOfQuizzes,
+      // });
+     
+      // navigate('/quiz-question', { state: { questions: quizResponse.data.jsonData } });
+      
+      const quizResponse = [
+        {
+          "question": "What is the capital of France?",
+          "options": ["Berlin", "Madrid", "Paris", "Rome"],
+          "correctAnswer": "Paris"
+        },
+        {
+          "question": "Which planet is known as the Red Planet?",
+          "options": ["Earth", "Mars", "Jupiter", "Saturn"],
+          "correctAnswer": "Mars"
+        },
+        {
+          "question": "What is the largest mammal in the world?",
+          "options": ["Elephant", "Blue Whale", "Giraffe", "Great White Shark"],
+          "correctAnswer": "Blue Whale"
+        },
+        {
+          "question": "Who wrote the play 'Romeo and Juliet'?",
+          "options": ["William Shakespeare", "Charles Dickens", "J.K. Rowling", "Jane Austen"],
+          "correctAnswer": "William Shakespeare"
+        },
+        {
+          "question": "What is the chemical symbol for water?",
+          "options": ["H2O", "O2", "CO2", "NaCl"],
+          "correctAnswer": "H2O"
+        }
+      ]
+      
+
+
+      navigate('/quiz-question', { state: { questions: quizResponse } });
     } catch (error) {
       console.error('Error uploading file or generating quiz:', error);
     } finally {

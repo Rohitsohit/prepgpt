@@ -21,6 +21,7 @@ let customData;
 
 export const customDataCollector = (req, res) => {
   customData = req.body.data;
+  console.log(customData)
   if (customData) {
     res.json({ message: 'Custom data uploaded successfully. How can I help you?' });
   } else {
@@ -68,3 +69,46 @@ export const customGptChat = async (req, res) => {
     res.status(500).json({ message: 'Error processing your request.' });
   }
 };
+
+
+export const QuizGenerator=async(req,res)=>{
+  
+  const { numberOfQuestions } = req.body;
+    console.log(numberOfQuestions)
+    if (!customData) {
+        return res.status(400).json({ message: 'No custom data available. Please upload custom data first.' });
+    }
+
+    // Generate questions based on custom data
+    try {
+        const response = await axios.post('https://api.cohere.ai/generate', {
+            prompt: `Generate ${numberOfQuestions} quiz questions based on the following data: ${customData} in the json format as like this ${jsonFormat}`,
+            model: 'command-r-plus',
+            max_tokens: 150 * numberOfQuestions, // Adjust max_tokens based on number of questions
+        }, {
+            headers: { Authorization: `Bearer ${CohereKEY}` }
+        });
+
+        let input = response.data.text
+        
+        // Extract JSON using string methods
+        const startIndex = input.indexOf('```json\n') + 8; // 8 is the length of '```json\n'
+        const endIndex = input.indexOf('\n```', startIndex);
+        const jsonString = input.substring(startIndex, endIndex);
+
+        try {
+            const jsonData = JSON.parse(jsonString);
+            res.json({ jsonData });
+        } catch (error) {
+            console.error('Failed to parse JSON:', error);
+            res.status(500).json({ message: 'Error parsing JSON response from Cohere API.' });
+        }
+       
+    } catch (error) {
+        console.error('Error with Cohere API:', error);
+        res.status(500).json({ message: 'Error processing your request.' });
+    }
+
+
+
+}

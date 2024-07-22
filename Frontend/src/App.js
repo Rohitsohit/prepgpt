@@ -5,9 +5,7 @@ import Home from './Components/Home';
 import CustomGPT from './Components/CustomGPT';
 import AuthForm from './Components/AuthForm';
 import Quiz from './Components/Quiz';
-import Question from './Components/Question';
-import Navbar from './Components/Navbar';
-import BackgroundAnimation from './Components/BackgroundAnimation';
+import QuestionLayout from './Components/QuestionLayout';
 import Interviewprep from './Components/Interviewprep';
 
 
@@ -18,8 +16,8 @@ export default function App() {
       <Routes>
         <Route path="/" exact element={<Home />} />
         <Route path="/customGPT" exact element={<CustomGPT />} />
-        <Route path="/quiz" exact element={<Quiz></Quiz>} />
-        <Route path="/quiz-question" exact element={<Question />} />
+        <Route path="/quiz" exact element={<Quiz></Quiz>} /> 
+        <Route path="/quiz-question" exact element={<QuestionLayout/>} />
         <Route path="/auth" exact element={<AuthForm />} />
         <Route path="/interview-prep" exact element={<Interviewprep />} />
       </Routes>
