@@ -6,15 +6,14 @@ const QuestionComponent = () => {
   const location = useLocation();
   const { questions } = location.state || {};
   const {isQuestion} = location.state || {};
-  
-
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [isQuestionAvail, setisQuestionAvail] = useState(isQuestion);
+  
+
 
   const handleNext = () => {
     if (!userAnswers[currentQuestionIndex]) {
@@ -29,9 +28,11 @@ const QuestionComponent = () => {
     }
   };
 
-  const handleCheckboxChange = () => {
+  const handleCheckboxChange = (question) => {
     setIsChecked(!isChecked);
 
+
+    console.log(question)
   };
 
   const handleAnswerChange = (e) => {
@@ -53,7 +54,7 @@ const QuestionComponent = () => {
 
   return (
     <>
-    {isQuestionAvail !="false" ?
+    {isQuestion !="false" ?
       <div className="flex items-center justify-center  bg-opacity-90 backdrop-blur-sm p-6 rounded-lg  max-w-md w-full">
         {!showResults ? (
           <div className="w-full">
@@ -89,7 +90,7 @@ const QuestionComponent = () => {
         id="checkboxInput"
         className="hidden"
         checked={isChecked}
-        onChange={handleCheckboxChange}
+        onChange={()=>handleCheckboxChange(questions[currentQuestionIndex])}
       />
       <label
         htmlFor="checkboxInput"
