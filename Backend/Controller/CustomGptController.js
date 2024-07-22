@@ -16,6 +16,7 @@ let jsonFormat = [{
   correctAnswer: "",
 }];
 
+
 let CohereKEY = process.env.CohereKEY;
 let customData;
 
@@ -73,8 +74,8 @@ export const customGptChat = async (req, res) => {
 
 export const QuizGenerator=async(req,res)=>{
   
-  const { numberOfQuestions } = req.body;
-    console.log(numberOfQuestions)
+  const { numberOfQuestions,difficulty } = req.body;
+    console.log(req.body)
     if (!customData) {
         return res.status(400).json({ message: 'No custom data available. Please upload custom data first.' });
     }
@@ -82,7 +83,7 @@ export const QuizGenerator=async(req,res)=>{
     // Generate questions based on custom data
     try {
         const response = await axios.post('https://api.cohere.ai/generate', {
-            prompt: `Generate ${numberOfQuestions} quiz questions based on the following data: ${customData} in the json format as like this ${jsonFormat}`,
+            prompt: `Generate ${numberOfQuestions} difficulty level ${difficulty} quiz questions based on the following data: ${customData} in the json format as like this ${jsonFormat}`,
             model: 'command-r-plus',
             max_tokens: 150 * numberOfQuestions, // Adjust max_tokens based on number of questions
         }, {
@@ -98,6 +99,7 @@ export const QuizGenerator=async(req,res)=>{
 
         try {
             const jsonData = JSON.parse(jsonString);
+            console.log(jsonData)
             res.json({ jsonData });
         } catch (error) {
             console.error('Failed to parse JSON:', error);

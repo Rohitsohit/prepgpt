@@ -36,3 +36,21 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* App.css */
+.bookmark::before,
+.bookmark::after {
+  content: "";
+  position: absolute;
+}
+
+.bookmark::before {
+  content: "+";
+  top: 1px;
+}
+
+#checkboxInput:checked + .bookmark::before {
+  content: "✓";
+  top: 5px;
+}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import QuizComponent from './Question';
+import QuestionComponent from './QuestionComponent';
 import { useSearchParams } from 'react-router-dom';
 
 const QuestionLayout = () => {
@@ -27,9 +27,7 @@ const QuestionLayout = () => {
         </ul>
       </div>
       <div className="w-full lg:w-2/3 p-4 bg-white shadow-md rounded">
-         
-
-        <QuizComponent/>
+        <QuestionComponent/>
       </div>
     </div>
   );
