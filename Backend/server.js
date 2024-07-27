@@ -13,8 +13,6 @@ app.use(express.json());
 
 
 
-
-
 app.use('/auth', authRouter);
 app.use('/gpt', gptRouters);
 app.listen(PORT, () => {

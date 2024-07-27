@@ -1,5 +1,4 @@
 import React from 'react';
-import BackgroundAnimation from './BackgroundAnimation'; // Ensure to import the BackgroundAnimation component
 
 export default function Home() {
   return (

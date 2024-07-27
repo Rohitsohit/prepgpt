@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import axios from 'axios';
 import NodeCache from 'node-cache';
-import { pool } from '../Model/UserTable.js';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
+import { pool } from '../Model/UserTable.js';
 
 const myCache = new NodeCache({ stdTTL: 600 }); // Cache for 10 minutes
 
@@ -117,44 +117,103 @@ export const QuizGenerator = async (req, res) => {
 }
 
 
-export const saveQuizData = async (req,res) => {
-  const {username, quizTitle, quizData} = req.body
-  console.log(username,quizTitle,quizData)
+export const saveQuizData = async (req, res) => {
+  const { titleToSave, savedQuizzes } = req.body;
+  const username = 'sohit';
+  console.log(titleToSave,savedQuizzes)
   try {
-    // // Update the quiz data and title for the user
-    // await pool.execute(
-    //   'UPDATE users SET quizTitle = ?, quizData = ? WHERE username = ?',
-    //   [quizTitle, JSON.stringify(quizData), username]
-    // );
+    // Get the user id
+    const [userRows] = await pool.execute('SELECT id FROM users WHERE username = ?', [username]);
+    
+    if (userRows.length > 0) {
+      const userId = userRows[0].id;
+      
+      // Insert the quiz data
+      await pool.execute(
+        'INSERT INTO quizzes (user_id, title, question) VALUES (?, ?, ?)',
+        [userId, titleToSave, savedQuizzes]
+      );
 
-    console.log('Quiz data saved successfully');
+      console.log('Quiz data saved successfully');
+      res.status(200).json({ message: 'Quiz data saved successfully' });
+    } else {
+      console.log('User not found');
+      res.status(404).json({ message: 'User not found' });
+    }
   } catch (error) {
     console.error('Error saving quiz data:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 }
 
-export const getSavedQuiz = async () => {
 
-  const {username} = req.body;
-  console.log(username)
+
+export const getSavedQuiz = async (req, res) => {
+  
+ const { titleToRetrieve,username } = req.body;
+ 
   try {
-    // Fetch the quiz data and title for the user
+    // Get the user id
+    const [userRows] = await pool.execute('SELECT id FROM users WHERE username = ?', [username]);
+    
+    if (userRows.length > 0) {
+      const userId = userRows[0].id;
       
-    // var [rows] = await pool.execute(
-    //   'SELECT quizTitle, quizData FROM users WHERE username = ?',
-    //   [username]
-    // );
+      // Fetch the quiz data for the given title
+      const [quizRows] = await pool.execute(
+        'SELECT question FROM quizzes WHERE user_id = ? AND title = ?',
+        [userId, titleToRetrieve]
+      );
 
-    // if (rows.length > 0) {
-    //   const { quizTitle, quizData } = rows[0];
-    //   console.log('Quiz Title:', quizTitle);
-    //   console.log('Quiz Data:', quizData);
-    //   return { quizTitle, quizData: quizData };
-    // } else {
-    //   console.log('No quiz data found for this user');
-    //   return null;
-    // }
+      if (quizRows.length > 0) {
+       
+        const data =res.status(200).json({ quizTitle: titleToRetrieve, quizQuestions: quizRows });
+
+        
+
+      } else {
+        console.log('No quiz data found for this title');
+        res.status(404).json({ message: 'No quiz data found for this title' });
+      }
+    } else {
+      console.log('User not found');
+      res.status(404).json({ message: 'User not found' });
+    }
   } catch (error) {
     console.error('Error retrieving quiz data:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+
+
+export const getAllQuizTitles = async (req, res) => {
+  const user = req.query;
+  
+  try {
+    // Get the user id
+    const [userRows] = await pool.execute('SELECT id FROM users WHERE username = ?', [user.username]);
+    
+    if (userRows.length > 0) {
+      const userId = userRows[0].id;
+      
+      // Fetch all quiz titles for the user
+      const [titleRows] = await pool.execute(
+        'SELECT DISTINCT title FROM quizzes WHERE user_id = ?',
+        [userId]
+      );
+
+      if (titleRows.length > 0) {
+        res.status(200).json({ quizTitles: titleRows.map(row => row.title) });
+      } else {
+        console.log('No quiz titles found for this user');
+        res.status(404).json({ message: 'No quiz titles found for this user' });
+      }
+    } else {
+      console.log('User not found');
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error retrieving quiz titles:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 }

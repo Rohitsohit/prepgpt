@@ -13,7 +13,6 @@ const QuestionComponent = () => {
   const [showWarning, setShowWarning] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [savedQuizzes, setSavedQuizzes] = useState([]); // State to manage saved quizzes
   const [precisequestion, setprecisequestion] = useState();
   
   const handleNext = () => {
@@ -57,10 +56,7 @@ const QuestionComponent = () => {
     setIsModalOpen(false);
   };
 
-  const handleSaveQuiz = (title) => {
-    setSavedQuizzes([...savedQuizzes, { title, precisequestion }]);
-    setIsModalOpen(false);
-  };
+  
 
   return (
     <>
@@ -196,8 +192,7 @@ const QuestionComponent = () => {
       <SaveQuizModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onSave={handleSaveQuiz}
-        savedQuizzes={savedQuizzes} // Pass saved quizzes to modal
+        savedQuizzes={precisequestion} // Pass saved quizzes to modal
       />
     </>
   );

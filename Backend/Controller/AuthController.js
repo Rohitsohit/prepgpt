@@ -15,6 +15,7 @@ export const signup= async(req,res)=>{
         );
     
         const [newUser] = await pool.query('SELECT * FROM users WHERE id = ?', [result.insertId]);
+        console.log(newUser)
         res.json(newUser[0]);
       } catch (err) {
         console.error(err);
@@ -24,24 +25,27 @@ export const signup= async(req,res)=>{
 
 
 
-export const signin=async (req,res)=>{
-    try {
-        const { username, password } = req.body;
-        console.log(username,password)
-        const [user] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
+export const signin = async (req, res) => {
+  try {
+    const { username, password } = req.body;
     
-        if (user.length === 0) return res.status(400).json({ message: 'User not found' });
+    const [rows] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
     
-        const validPassword = await bcrypt.compare(password, user[0].password);
-        if (!validPassword) return res.status(400).json({ message: 'Invalid password' });
+    if (rows.length === 0) return res.status(400).json({ message: 'User not found' });
     
-        const token = jwt.sign({ id: user[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
-      }
+    const user = rows[0]; // Extract the first user from the result
+    const validPassword = await bcrypt.compare(password, user.password);
+    
+    if (!validPassword) return res.status(400).json({ message: 'Invalid password' });
+    
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token, username: user.username }); // Include the username in the response
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
 }
+
 
 
 

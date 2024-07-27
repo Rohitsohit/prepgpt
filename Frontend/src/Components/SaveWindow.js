@@ -1,39 +1,56 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+let backend = 'http://localhost:8000';
 
 const SaveQuizModal = ({ isOpen, onClose, savedQuizzes }) => {
   const [selectedTitle, setSelectedTitle] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
-  
-  
+  const [quizTitles, setQuizTitles] = useState([]);
 
+  const user=JSON.parse(localStorage.getItem("profile-prepGPT"))
 
   useEffect(() => {
     if (isOpen) {
       setSelectedTitle('');
       setNewTitle('');
       setTermsAccepted(false);
+      fetchTitles();
     }
   }, [isOpen]);
 
-
-  
-
-
+  const fetchTitles = async () => {
+    try {
+      
+      const response = await axios.get(`${backend}/gpt/getallquiz`, {
+        params: {
+          username: user.username
+        }
+      });
+      setQuizTitles(response.data.
+        quizTitles
+         || []);
+    } catch (error) {
+      console.error('Error fetching quiz data:', error);
+    }
+  };
 
   if (!isOpen) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     
     if (termsAccepted) {
-      
       const titleToSave = selectedTitle === 'new' ? newTitle : selectedTitle;
-      
-      console.log(titleToSave)
-      
-      setSelectedTitle('');
-      setNewTitle('');
-      setTermsAccepted(false);
+        
+      try {
+        await axios.post(`${backend}/gpt/save-quiz`, {titleToSave, savedQuizzes});
+        setSelectedTitle('');
+        setNewTitle('');
+        setTermsAccepted(false);
+        onClose();
+      } catch (error) {
+        console.error('Error saving quiz:', error);
+      }
     } else {
       alert('Please accept the terms of use to save the quiz.');
     }
@@ -58,8 +75,8 @@ const SaveQuizModal = ({ isOpen, onClose, savedQuizzes }) => {
             className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 focus:ring-offset-gray-100 mb-4"
           >
             <option value="" disabled>Select a saved quiz</option>
-            {savedQuizzes.map((quiz, index) => (
-              <option key={index} value={quiz.title}>{quiz.title}</option>
+            {quizTitles.map((quiz, index) => (
+              <option key={index} value={quiz}>{quiz}</option>
             ))}
             <option value="new">Create New Quiz</option>
           </select>
