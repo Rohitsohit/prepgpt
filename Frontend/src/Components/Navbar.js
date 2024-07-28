@@ -26,7 +26,7 @@ export default function Navbar() {
               <p className="sr-only">Website Title</p>
             </Link>
           </div>
-          <div className="hidden md:flex md:items-center md:justify-center md:gap-5">
+          <div className="flex items-center justify-center gap-5">
             <Link
               aria-current="page"
               className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
@@ -39,12 +39,6 @@ export default function Navbar() {
               to="/quiz"
             >
               QuizGPT
-            </Link>
-            <Link
-              className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
-              to="/interview-prep"
-            >
-              InterviewPrep
             </Link>
           </div>
           <div className="flex items-center justify-end gap-3">
