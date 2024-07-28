@@ -134,7 +134,6 @@ export const saveQuizData = async (req, res) => {
         [userId, titleToSave, savedQuizzes]
       );
 
-      console.log('Quiz data saved successfully');
       res.status(200).json({ message: 'Quiz data saved successfully' });
     } else {
       console.log('User not found');

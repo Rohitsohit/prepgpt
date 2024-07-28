@@ -5,6 +5,8 @@ import axios from 'axios';
 let backend = 'http://localhost:8000';
 
 const SaveQuizModal = ({ isOpen, onClose, savedQuizzes }) => {
+
+  console.log(savedQuizzes)
   // State variables
   const [selectedTitle, setSelectedTitle] = useState('');
   const [newTitle, setNewTitle] = useState('');

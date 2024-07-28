@@ -5,7 +5,7 @@ import BackgroundAnimation from './BackgroundAnimation'; // Adjust the path if n
 export default function Layout({ children }) {
   return (
     <div>
-      <BackgroundAnimation />
+      <BackgroundAnimation/>
       <Navbar />
       <main className="relative z-10">{children}</main>
     </div>

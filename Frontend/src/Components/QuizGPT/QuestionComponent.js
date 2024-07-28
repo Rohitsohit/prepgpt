@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import SaveQuizModal from './SaveWindow'; // Import the modal component
 
 const QuestionComponent = ({ quizData }) => {
   const location = useLocation();
-  let { questions } = location.state || {};
+  let { questions: initialQuestions } = location.state || {};
   const { isQuestion } = location.state || {};
-
-  if (quizData) {
-    questions = quizData.quizQuestions;
-  }
 
   // State variables
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -19,9 +15,20 @@ const QuestionComponent = ({ quizData }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [preciseQuestion, setPreciseQuestion] = useState();
+  const [questions, setQuestions] = useState(initialQuestions || quizData || []);
 
   // Retrieve user profile from local storage
   const user = JSON.parse(localStorage.getItem("profile-prepGPT"));
+
+  // Reset to the first question when quizData changes
+  useEffect(() => {
+    if (quizData) {
+      setQuestions(quizData);
+      setCurrentQuestionIndex(0);
+      setUserAnswers({});
+      setShowResults(false);
+    }
+  }, [quizData]);
 
   // Handle next button click
   const handleNext = () => {
@@ -71,10 +78,10 @@ const QuestionComponent = ({ quizData }) => {
   };
 
   // Render the question component
-  return questions && questions.length != 0 ? (
+  return questions.length > 0 ? (
     <>
       {isQuestion !== 'false' ? (
-        <div className={`flex items-center justify-center p-6 rounded-lg max-w-md w-full ${isModalOpen ? 'bg-opacity-90 backdrop-blur-sm' : 'bg-opacity-100'}`}>
+        <div className={`flex flex-col items-center justify-center p-6 rounded-lg max-w-md w-full ${isModalOpen ? 'bg-opacity-90 backdrop-blur-sm' : 'bg-opacity-100'} md:max-w-2xl lg:max-w-3xl xl:max-w-4xl`}>
           {!showResults ? (
             <div className="w-full">
               <div className="mb-4">
@@ -198,7 +205,11 @@ const QuestionComponent = ({ quizData }) => {
           )}
         </div>
       ) : (
-        <div>no quiz</div>
+        <div className="flex items-center justify-center h-full w-full">
+          <div className="text-center">
+            <p className="text-lg font-bold">No quiz</p>
+          </div>
+        </div>
       )}
       
       <SaveQuizModal
@@ -208,7 +219,11 @@ const QuestionComponent = ({ quizData }) => {
       />
     </>
   ) : (
-    <div>Loading...</div>
+    <div className="flex items-center justify-center h-full w-full">
+      <div className="text-center">
+        <p className="text-lg font-bold">No quiz</p>
+      </div>
+    </div>
   );
 };
 

@@ -40,7 +40,10 @@ const QuestionLayout = () => {
     try {
       if (user) {
         const res = await axios.post(`${backend}/gpt/get-quiz`, { titleToRetrieve, username });
-        setQuizData(res.data);  // Update the state with the fetched quiz data
+       
+        const parsedQuizData = res.data.quizQuestions.map(question => JSON.parse(question.question));
+        setQuizData(parsedQuizData);
+         // Update the state with the fetched quiz data
       } else {
         console.log("Please log in");
       }
@@ -56,27 +59,29 @@ const QuestionLayout = () => {
 
   // Render the layout
   return (
-    <div className="flex flex-col lg:flex-row pt-32">
-      <div className="w-full lg:w-2/5 p-4 overflow-y-auto h-96 bg-white bg-opacity-85 shadow-md rounded mb-4 lg:mb-0 lg:mr-4">
-        <h2 className="text-xl font-bold mb-4">Saved Questions</h2>
-        {user ? (
-          loading ? (
-            <p>Loading...</p>
+    <div className="relative flex justify-center items-center min-h-screen bg-animation">
+      <div className="flex flex-col lg:flex-row w-full lg:w-3/4 px-4">
+        <div className="w-full lg:w-2/5 p-4 overflow-y-auto h-96 bg-white bg-opacity-85 shadow-md rounded mb-4 lg:mb-0 lg:mr-4">
+          <h2 className="text-xl font-bold mb-4">Saved Questions</h2>
+          {user ? (
+            loading ? (
+              <p>Loading...</p>
+            ) : (
+              <ul>
+                {QuizTitles.map((title, index) => (
+                  <li key={index} onClick={() => handleQuestionClick(title)} className="p-2 border-b border-gray-300 cursor-pointer">
+                    {title}
+                  </li>
+                ))}
+              </ul>
+            )
           ) : (
-            <ul>
-              {QuizTitles.map((title, index) => (
-                <li key={index} onClick={() => handleQuestionClick(title)} className="p-2 border-b border-gray-300 cursor-pointer">
-                  {title}
-                </li>
-              ))}
-            </ul>
-          )
-        ) : (
-          <p>Need to login to get the saved questions</p>
-        )}
-      </div>
-      <div className="w-full lg:w-3/6 p-4 bg-white bg-opacity-85 shadow-md rounded">
-        <QuestionComponent quizData={quizData} />
+            <p>Need to login to get the saved questions</p>
+          )}
+        </div>
+        <div className="w-full lg:w-3/5 p-4 h-96 overflow-y-auto bg-white bg-opacity-85 shadow-md rounded">
+          <QuestionComponent quizData={quizData} />
+        </div>
       </div>
     </div>
   );

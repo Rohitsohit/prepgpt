@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import pdfToText from 'react-pdftotext'
 let backend = 'http://localhost:8000';
 
 export default function CustomGPT() {
@@ -67,10 +67,14 @@ export default function CustomGPT() {
   };
 
   // Extract text from PDF
-  const extractTextFromPDF = (file) => {
-    // Your code for extracting text from PDF goes here
-    simulateProgress();
+  const extractTextFromPDF = async (file) => {
+    
+        pdfToText(file)
+            .then(text => console.log(text))
+            .catch(error => console.error("Failed to extract text from pdf"))
   };
+
+ 
 
   // Extract text from TXT file
   const extractTextFromTXT = (file) => {
@@ -108,9 +112,7 @@ export default function CustomGPT() {
 
   // Render the component
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen"   
-    >
+    <div className="flex flex-col items-center justify-center min-h-screen">
       {!chatStarted ? (
         <div className="flex flex-col items-center justify-center h-full">
           <label className="flex flex-col items-center px-6 py-8 bg-white rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue-700 hover:text-white text-blue-700 ease-linear transition-all duration-150 text-lg">
@@ -145,7 +147,7 @@ export default function CustomGPT() {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col w-full max-w-4xl h-full p-4 bg-gray-100 rounded shadow-lg">
+        <div className="flex flex-col w-full max-w-2xl h-full p-4 bg-gray-100 rounded shadow-lg">
           <div className="flex flex-col flex-grow h-96 p-4 overflow-y-auto bg-gray-100 rounded">
             {messages.map((msg, index) => (
               <div
@@ -158,9 +160,8 @@ export default function CustomGPT() {
                   </div>
                 ) : (
                   <div
-                    className={`${
-                      msg.user === "User" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
-                    } p-2 rounded max-w-xs`}
+                    className={`${msg.user === "User" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+                      } p-2 rounded max-w-xs`}
                   >
                     {msg.text}
                   </div>
