@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import pdfToText from 'react-pdftotext'
 let backend = 'http://localhost:8000';
 
 export default function CustomGPT() {
@@ -69,9 +68,6 @@ export default function CustomGPT() {
   // Extract text from PDF
   const extractTextFromPDF = async (file) => {
     
-        pdfToText(file)
-            .then(text => console.log(text))
-            .catch(error => console.error("Failed to extract text from pdf"))
   };
 
  
