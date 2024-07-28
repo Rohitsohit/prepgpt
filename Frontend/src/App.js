@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as  Route, Routes } from 'react-router-dom';
 import Layout from './Components/Layout';
 import Home from './Components/Home';
 import CustomGPT from './Components/CustomGPT/CustomGPT';
