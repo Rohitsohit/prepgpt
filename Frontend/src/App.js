@@ -5,7 +5,7 @@ import Home from './Components/Home';
 import CustomGPT from './Components/CustomGPT/CustomGPT';
 import AuthForm from './Components/AuthForm';
 import Quiz from './Components/QuizGPT/Quiz';
-import QuestionLayout from './Components/QuizGPT/QuestionLayout';
+import QuestionLayout from './Components/QuizGPT/QuizLayout';
 
 export default function App() {
  
