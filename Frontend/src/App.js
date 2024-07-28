@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as  Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Layout from './Components/Layout';
 import Home from './Components/Home';
 import CustomGPT from './Components/CustomGPT/CustomGPT';
@@ -7,13 +7,8 @@ import AuthForm from './Components/AuthForm';
 import Quiz from './Components/QuizGPT/Quiz';
 import QuestionLayout from './Components/QuizGPT/QuestionLayout';
 
-
-
 export default function App() {
  
-
-
-
   return (
     <>
      <Layout>
