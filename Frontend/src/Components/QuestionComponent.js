@@ -2,24 +2,38 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import SaveQuizModal from './SaveWindow'; // Import the modal component
 
-const QuestionComponent = () => {
+const QuestionComponent = ({quizData}) => {
   const location = useLocation();
-  const { questions } = location.state || {};
+  var { questions } = location.state || {};
   const { isQuestion } = location.state || {};
 
+  if(quizData){
+    // console.log(quizData.quizQuestions)
+    questions = quizData.quizQuestions;
+  }
+ 
+  console.log(questions)
+
+  // State variables
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [precisequestion, setprecisequestion] = useState();
-  
+  const [preciseQuestion, setPreciseQuestion] = useState();
+
+  // Retrieve user profile from local storage
+  const user = JSON.parse(localStorage.getItem("profile-prepGPT"));
+
+  // Handle next button click
   const handleNext = () => {
+    // Show warning if no answer is selected
     if (!userAnswers[currentQuestionIndex]) {
       setShowWarning(true);
     } else {
       setShowWarning(false);
+      // Move to the next question or show results if it's the last question
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
@@ -28,13 +42,14 @@ const QuestionComponent = () => {
     }
   };
 
+  // Handle checkbox change for bookmarking questions
   const handleCheckboxChange = (question) => {
-    setprecisequestion(question);
+    setPreciseQuestion(question);
     setIsChecked(!isChecked);
     setIsModalOpen(true); // Open the modal
-    
   };
 
+  // Handle answer change
   const handleAnswerChange = (e) => {
     setUserAnswers({
       ...userAnswers,
@@ -43,6 +58,7 @@ const QuestionComponent = () => {
     setShowWarning(false); // Reset warning when user inputs an answer
   };
 
+  // Calculate score based on user answers
   const calculateScore = () => {
     return questions.reduce((score, question, index) => {
       if (question.answer === userAnswers[index]) {
@@ -52,13 +68,14 @@ const QuestionComponent = () => {
     }, 0);
   };
 
+  // Close the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
-  
-
+  // Render the question component
   return (
+    
     <>
       {isQuestion !== 'false' ? (
         <div className={`flex items-center justify-center p-6 rounded-lg max-w-md w-full ${isModalOpen ? 'bg-opacity-90 backdrop-blur-sm' : 'bg-opacity-100'}`}>
@@ -87,43 +104,41 @@ const QuestionComponent = () => {
               </div>
 
               <div className="flex justify-end space-x-4 mb-4">
-                <div className="relative cursor-pointer flex items-center justify-center">
-                  <input
-                    type="checkbox"
-                    id="checkboxInput"
-                    className="hidden"
-                    checked={isChecked}
-                    onChange={()=>handleCheckboxChange(questions[currentQuestionIndex])}
-                  />
-                  <label
-                    htmlFor="checkboxInput"
-                    className="bookmark relative flex items-center justify-center"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="1em"
-                      viewBox="0 0 384 512"
-                      className="svgIcon h-8"
+                {user && (
+                  <div className="relative cursor-pointer flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      id="checkboxInput"
+                      className="hidden"
+                      checked={isChecked}
+                      onChange={() => handleCheckboxChange(questions[currentQuestionIndex])}
+                    />
+                    <label
+                      htmlFor="checkboxInput"
+                      className="bookmark relative flex items-center justify-center"
                     >
-                      <path
-                        d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"
-                        className={`fill-current ${isChecked ? 'text-green-600' : 'text-gray-600'}`}
-                      />
-                    </svg>
-                    <span
-                      className={`absolute text-white font-bold ${
-                        isChecked ? 'text-xs top-1' : 'text-xl top-0'
-                      }`}
-                    >
-                      {isChecked ? '\u2713' : '\u002B'}
-                    </span>
-                    <span
-                      className={`absolute w-2 h-2 bg-green-700 rounded-full z-[-1] ${
-                        isChecked ? 'animate-puff-out-center' : ''
-                      }`}
-                    ></span>
-                  </label>
-                </div>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="1em"
+                        viewBox="0 0 384 512"
+                        className="svgIcon h-8"
+                      >
+                        <path
+                          d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"
+                          className={`fill-current ${isChecked ? 'text-green-600' : 'text-gray-600'}`}
+                        />
+                      </svg>
+                      <span
+                        className={`absolute text-white font-bold ${isChecked ? 'text-xs top-1' : 'text-xl top-0'}`}
+                      >
+                        {isChecked ? '\u2713' : '\u002B'}
+                      </span>
+                      <span
+                        className={`absolute w-2 h-2 bg-green-700 rounded-full z-[-1] ${isChecked ? 'animate-puff-out-center' : ''}`}
+                      ></span>
+                    </label>
+                  </div>
+                )}
 
                 <button
                   onClick={handleNext}
@@ -189,10 +204,11 @@ const QuestionComponent = () => {
       ) : (
         <div>no quiz</div>
       )}
+      
       <SaveQuizModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        savedQuizzes={precisequestion} // Pass saved quizzes to modal
+        savedQuizzes={preciseQuestion} // Pass saved quizzes to modal
       />
     </>
   );

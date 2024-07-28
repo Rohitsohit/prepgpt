@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
-
 let backend = 'http://localhost:8000';
 
 export default function CustomGPT() {
+  // State variables
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [fileUploaded, setFileUploaded] = useState(false);
@@ -11,6 +11,7 @@ export default function CustomGPT() {
   const [chatStarted, setChatStarted] = useState(false);
   const [messageLoading, setMessageLoading] = useState(false);
 
+  // Send message to the backend and update the message list
   const sendMessage = async () => {
     setMessages((prevMessages) => [...prevMessages, { user: 'User', text: message }]);
     setMessageLoading(true);
@@ -37,16 +38,22 @@ export default function CustomGPT() {
     }
   };
 
+  // Send custom data to the backend
   const sendCustomData = async (customData) => {
-    const response = await fetch(`${backend}/gpt/upload-data`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: customData }),
-    });
-    const data = await response.json();
-    setMessages((prevMessages) => [...prevMessages, { user: 'Bot', text: data.message }]);
+    try {
+      const response = await fetch(`${backend}/gpt/upload-data`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: customData }),
+      });
+      const data = await response.json();
+      setMessages((prevMessages) => [...prevMessages, { user: 'Bot', text: data.message }]);
+    } catch (error) {
+      console.error('Error uploading custom data:', error);
+    }
   };
 
+  // Handle file upload and read its content
   const handleUploadFile = (event) => {
     const file = event.target.files[0];
 
@@ -59,11 +66,13 @@ export default function CustomGPT() {
     }
   };
 
+  // Extract text from PDF
   const extractTextFromPDF = (file) => {
     // Your code for extracting text from PDF goes here
     simulateProgress();
   };
 
+  // Extract text from TXT file
   const extractTextFromTXT = (file) => {
     if (file) {
       const reader = new FileReader();
@@ -79,6 +88,7 @@ export default function CustomGPT() {
     }
   };
 
+  // Simulate upload progress
   const simulateProgress = () => {
     const interval = setInterval(() => {
       setUploadProgress((prevProgress) => {
@@ -88,15 +98,20 @@ export default function CustomGPT() {
         }
         return prevProgress + 15;
       });
-    }, 50); // Adjust the interval duration to control the speed of the progress
+    }, 50);
   };
 
+  // Start chat after file upload
   const handleStartChat = () => {
     setChatStarted(true);
   };
 
+  // Render the component
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-blue-900">
+    <div
+      className="flex flex-col items-center justify-center min-h-screen"
+      
+    >
       {!chatStarted ? (
         <div className="flex flex-col items-center justify-center h-full">
           <label className="flex flex-col items-center px-6 py-8 bg-white rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue-700 hover:text-white text-blue-700 ease-linear transition-all duration-150 text-lg">

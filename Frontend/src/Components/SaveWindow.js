@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
+// Backend URL
 let backend = 'http://localhost:8000';
 
 const SaveQuizModal = ({ isOpen, onClose, savedQuizzes }) => {
+  // State variables
   const [selectedTitle, setSelectedTitle] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [quizTitles, setQuizTitles] = useState([]);
 
-  const user=JSON.parse(localStorage.getItem("profile-prepGPT"))
+  // Retrieve user profile from local storage
+  const user = JSON.parse(localStorage.getItem("profile-prepGPT"));
 
+  // Fetch quiz titles when modal is opened
   useEffect(() => {
     if (isOpen) {
       setSelectedTitle('');
@@ -19,31 +24,34 @@ const SaveQuizModal = ({ isOpen, onClose, savedQuizzes }) => {
     }
   }, [isOpen]);
 
+  // Fetch existing quiz titles from the backend
   const fetchTitles = async () => {
     try {
-      
-      const response = await axios.get(`${backend}/gpt/getallquiz`, {
-        params: {
-          username: user.username
-        }
-      });
-      setQuizTitles(response.data.
-        quizTitles
-         || []);
+      if (user) {
+        const response = await axios.get(`${backend}/gpt/getallquiz`, {
+          params: {
+            username: user.username
+          }
+        });
+        setQuizTitles(response.data.quizTitles || []);
+      } else {
+        console.log("Please login");
+      }
     } catch (error) {
       console.error('Error fetching quiz data:', error);
     }
   };
 
+  // Close modal if not open
   if (!isOpen) return null;
 
+  // Handle saving the quiz
   const handleSave = async () => {
-    
-    if (termsAccepted) {
+    if (user && termsAccepted) {
       const titleToSave = selectedTitle === 'new' ? newTitle : selectedTitle;
-        
+
       try {
-        await axios.post(`${backend}/gpt/save-quiz`, {titleToSave, savedQuizzes});
+        await axios.post(`${backend}/gpt/save-quiz`, { titleToSave, savedQuizzes });
         setSelectedTitle('');
         setNewTitle('');
         setTermsAccepted(false);
@@ -56,6 +64,7 @@ const SaveQuizModal = ({ isOpen, onClose, savedQuizzes }) => {
     }
   };
 
+  // Handle quiz title selection change
   const handleSelectChange = (e) => {
     const value = e.target.value;
     setSelectedTitle(value);
@@ -65,6 +74,7 @@ const SaveQuizModal = ({ isOpen, onClose, savedQuizzes }) => {
     }
   };
 
+  // Render the modal
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
       <div className="w-80 rounded-2xl bg-white">

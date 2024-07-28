@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+// Backend URL
 let backend = "http://localhost:8000";
-// let backend = "https://prepgpt.vercel.app";
+
 export default function Quiz() {
+  // State variables
   const [numberOfQuizzes, setNumberOfQuizzes] = useState('');
   const [fileUploaded, setFileUploaded] = useState(false);
   const [fileName, setFileName] = useState('');
@@ -14,6 +15,9 @@ export default function Quiz() {
   const [difficulty, setDifficulty] = useState('Easy');
   const navigate = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem("profile-prepGPT"));
+
+  // Handle file upload and read its content
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -36,69 +40,79 @@ export default function Quiz() {
     }
   };
 
+  // Handle changes in the number of quizzes input
   const handleQuizNumberChange = (e) => {
     setNumberOfQuizzes(e.target.value);
   };
 
+  // Handle changes in the difficulty selection
   const handleDifficultyChange = (e) => {
     setDifficulty(e.target.value);
   };
 
+  // Send custom data to the backend
   const sendCustomData = async (customData) => {
-    console.log(customData);
     if (customData) {
-      const response = await fetch(`${backend}/gpt/upload-data`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: customData }),
-      });
+      try {
+        const response = await fetch(`${backend}/gpt/upload-data`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: customData }),
+        });
+      } catch (error) {
+        console.error('Error uploading custom data:', error);
+      }
     } else {
-      console.log('custom data is empty');
+      console.log('Custom data is empty');
     }
-    console.log(customData);
   };
 
+  // Handle form submission to generate quiz
   const handleSubmit = async () => {
     setQuizLoading(true);
-     let questions= [
-    {
-      question: 'Which two world powers were not initially involved in World War I but had a significant impact when they joined the conflict?',
-      options: [
-        'China and Japan',
-        'United States and Soviet Union',
-        'India and Brazil',
-        'Canada and Australia'
-      ],
-      answer: 'United States and Soviet Union'
-    },
-    {
-      question: 'True or False: World War I ended solely with the signing of the Treaty of Versailles?',
-      options: [ 'True', 'False' ],
-      answer: 'False',
-      explanation: "While the Treaty of Versailles was a significant document that officially ended the war with Germany, it's important to note that multiple treaties and agreements were signed with other Central Powers, such as the Treaty of Saint-Germain with Austria, the Treaty of Trianon with Hungary, and the Treaty of Sèvres (later replaced by the Treaty of Lausanne) with the Ottoman Empire."
-    }
-  ]
 
+    // Example questions, replace this with the actual backend call
+    let questions = [
+      {
+        question: 'Which two world powers were not initially involved in World War I but had a significant impact when they joined the conflict?',
+        options: [
+          'China and Japan',
+          'United States and Soviet Union',
+          'India and Brazil',
+          'Canada and Australia'
+        ],
+        answer: 'United States and Soviet Union'
+      },
+      {
+        question: 'True or False: World War I ended solely with the signing of the Treaty of Versailles?',
+        options: ['True', 'False'],
+        answer: 'False',
+        explanation: "While the Treaty of Versailles was a significant document that officially ended the war with Germany, it's important to note that multiple treaties and agreements were signed with other Central Powers, such as the Treaty of Saint-Germain with Austria, the Treaty of Trianon with Hungary, and the Treaty of Sèvres (later replaced by the Treaty of Lausanne) with the Ottoman Empire."
+      }
+    ];
 
     try {
+      // Uncomment and use the following code when backend is ready
       // const quizResponse = await axios.post(`${backend}/gpt/quiz`, {
       //   numberOfQuestions: numberOfQuizzes,
       //   difficulty: difficulty,
       // });
-
       // navigate('/quiz-question', { state: { questions: quizResponse.data.jsonData } });
+
       navigate('/quiz-question', { state: { questions: questions } });
     } catch (error) {
-      console.error('Error uploading file or generating quiz:', error);
+      console.error('Error generating quiz:', error);
     } finally {
       setQuizLoading(false);
     }
   };
 
+  // Navigate to saved questions
   const handleAccessSavedQuestions = () => {
-    navigate('/quiz-question',{ state: { isQuestion:"false" } });
+    navigate('/quiz-question', { state: { isQuestion: "false" } });
   };
 
+  // Render the component
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="bg-white/80 p-8 rounded-3xl shadow-md w-full max-w-lg border border-gray-100 backdrop-blur-lg">
@@ -193,12 +207,14 @@ export default function Quiz() {
           </>
         )}
       </div>
-      <button
-        className="bg-green-600 text-white p-2 rounded mt-4 hover:bg-green-700 transition-all duration-150"
-        onClick={handleAccessSavedQuestions}
-      >
-        Access Saved Questions
-      </button>
+      {user && (
+        <button
+          className="bg-green-600 text-white p-2 rounded mt-4 hover:bg-green-700 transition-all duration-150"
+          onClick={handleAccessSavedQuestions}
+        >
+          Access Saved Questions
+        </button>
+      )}
     </div>
   );
 }

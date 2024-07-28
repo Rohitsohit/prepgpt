@@ -8,14 +8,16 @@ export default function AuthForm() {
   const [isSignup, setIsSignup] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = isSignup ? `${backend}auth/signup` : `${backend}auth/signin`;
     try {
       const res = await axios.post(url, { username, password });
-      console.log(res.data.username);
+      
       localStorage.setItem("profile-prepGPT", JSON.stringify({ username:res.data.username}));
+      
       // Handle success (e.g., save token, redirect, etc.)
     } catch (err) {
       console.error(err);
